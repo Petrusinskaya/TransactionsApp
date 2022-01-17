@@ -1,3 +1,4 @@
+import model.Transaction;
 import util.DBUtil;
 
 import javax.swing.*;
@@ -69,6 +70,15 @@ public class TransactionAppGUI extends JFrame{
         transactionAppGUI.setLocationRelativeTo(null);
         transactionAppGUI.setVisible(true);
 
-        DBUtil.getItem();
+
+        Transaction tr1 = new Transaction();
+        tr1.setDateFromString("25-09-2004");
+        tr1.setAmount(2000f);
+        tr1.setSource("Horse riding");
+        tr1.setType("Income");
+        DBUtil.addTransaction(tr1);
+
+        DBUtil.delTransaction(3);
+        DBUtil.getAllTransactions();
     }
 }
