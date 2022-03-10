@@ -17,7 +17,6 @@ public class AddingTransaction extends JFrame {
     private JLabel amountLabel;
     private JLabel sourceLabel;
     private JLabel dayLabel;
-    private JTextField dayTextField;
     private JLabel monthLabel;
     private JLabel yearLabel;
     private JRadioButton expenseRadioButton;
@@ -78,75 +77,99 @@ public class AddingTransaction extends JFrame {
             yearComboBox.addItem(Calendar.getInstance().get(Calendar.YEAR)-i);
         }
 
+        Transaction transaction = new Transaction();
+
+        //Setting the date
+        final String[] day = {"1"};
+        final String[] month = {"January"};
+        final String[] year = {((Integer) Calendar.getInstance().get(Calendar.YEAR)).toString()};
+        dayComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Integer selectedDay = (Integer) dayComboBox.getSelectedItem();
+                day[0] = selectedDay.toString();
+                if (selectedDay<10){
+                    day[0] = "0" + day[0];
+                }
+            }
+        });
+
+        monthComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                switch ((String) monthComboBox.getSelectedItem()) {
+                    case "January":
+                        month[0] = "01";
+                        break;
+                    case "February":
+                        month[0] = "02";
+                        break;
+                    case "March":
+                        month[0] = "03";
+                        break;
+                    case "April":
+                        month[0] = "04";
+                        break;
+                    case "May":
+                        month[0] = "05";
+                        break;
+                    case "June":
+                        month[0] = "06";
+                        break;
+                    case "July":
+                        month[0] = "07";
+                        break;
+                    case "August":
+                        month[0] = "08";
+                        break;
+                    case "Septebmer":
+                        month[0] = "09";
+                        break;
+                    case "October":
+                        month[0] = "10";
+                        break;
+                    case "November":
+                        month[0] = "11";
+                        break;
+                    case "December":
+                        month[0] = "12";
+                        break;
+                }
+            }
+        });
+
+        yearComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                year[0] = ((Integer) yearComboBox.getSelectedItem()).toString();
+            }
+        });
+
+        //Determining the type of transaction
+        expenseRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                transaction.setType("Expense");
+            }
+        });
+
+        incomeRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                transaction.setType("Income");
+            }
+        });
+
         addTransactionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Transaction transaction = new Transaction();
-
-                /*Setting the date
-                dayTextField.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        String day = dayTextField.getText();
-                    }
-                });
-
-                monthTextField.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        String month = dayTextField.getText();
-                    }
-                });
-
-                yearTextField.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        String year = dayTextField.getText();
-                    }
-                });*/
-
-                /*try {
-                    transaction.setDateFromString(dayTextField.getText() + "/" + monthTextField.getText() + "/" + yearTextField.getText());
-                } catch (ParseException parseException) {
-                    parseException.printStackTrace();
-                }*/
-
-                expenseRadioButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        transaction.setType("Expense");
-                    }
-                });
-
-                incomeRadioButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        transaction.setType("Income");
-                    }
-                });
-
-                transaction.setAmount(Float.valueOf(dayTextField.getText()));
-                transaction.setSource((String) sourceComboBox.getSelectedItem());
-
-                /*amountTextField.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        Float amount = Float.valueOf(dayTextField.getText());
-                        transaction.setAmount(amount);
-                    }
-                });
-
-                sourceComboBox.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        String source = (String) sourceComboBox.getSelectedItem();
-                        transaction.setSource(source);
-                    }
-                });*/
-
                 try {
+                    transaction.setDateFromString(day[0] + "-" + month[0] + "-" + year[0]);
+                    transaction.setAmount(Float.valueOf(amountTextField.getText()));
+                    transaction.setSource((String) sourceComboBox.getSelectedItem());
                     addTransaction(transaction);
-                } catch (SQLException throwables) {
+                    dispose();
+                } catch (SQLException | ParseException throwables) {
                     throwables.printStackTrace();
                 }
             }

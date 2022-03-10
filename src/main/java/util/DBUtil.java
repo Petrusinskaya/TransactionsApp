@@ -2,12 +2,12 @@ package util;
 
 import model.Transaction;
 import org.h2.jdbcx.JdbcConnectionPool;
-import org.h2.tools.Csv;
-import org.h2.tools.SimpleResultSet;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class DBUtil {
@@ -75,8 +75,8 @@ public class DBUtil {
         PreparedStatement preparedStatement = null;
         preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS ORDER BY \"Date\" DESC LIMIT 10");
         ResultSet rs = preparedStatement.executeQuery();
-        Transaction tr = new Transaction();
         while(rs.next()) {
+            Transaction tr = new Transaction();
             // Retrieve by column name
             tr.setDate(rs.getDate("Date"));
             tr.setType(rs.getString("Type"));

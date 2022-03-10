@@ -1,4 +1,5 @@
 import model.Transaction;
+import model.TransactionTableModel;
 import util.DBUtil;
 
 import javax.swing.*;
@@ -76,24 +77,10 @@ public class TransactionAppGUI extends JFrame{
         });
 
         //Adding the table of last transactions to the window
-        Vector<String> columnNames = new Vector<String>();
-        columnNames.add("Date");
-        columnNames.add("Type");
-        columnNames.add("Amount");
-        columnNames.add("Source");
-        Vector<Vector> data = new Vector<Vector>();
         List<Transaction> list = DBUtil.getLastTransactions();
-        for(Transaction element: list){
-            Vector<String> row = new Vector<String>();
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyy");
-            String date = sdf.format(element.getDate());
-            row.add(date);
-            row.add(element.getType());
-            row.add(String.format("%.1f",element.getAmount()));
-            row.add(element.getSource());
-            data.add(row);
-        }
-        lastTransactionsTable.setModel(new DefaultTableModel(data, columnNames));
+        TransactionTableModel lastTransactionsTableModel = new TransactionTableModel();
+        lastTransactionsTableModel.setData(list);
+        lastTransactionsTable.setModel(lastTransactionsTableModel);
 
     }
 
