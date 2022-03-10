@@ -2,9 +2,13 @@ import model.Transaction;
 import util.DBUtil;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Vector;
 
 public class TransactionAppGUI extends JFrame{
     private JPanel startPage;
@@ -15,8 +19,9 @@ public class TransactionAppGUI extends JFrame{
     private JLabel equipmentLabel;
     private JButton viewMoreEquipmentButton;
     private JButton addTransactionButton;
+    private JTable lastTransactionsTable;
 
-    public TransactionAppGUI(String title){
+    public TransactionAppGUI(String title) throws Exception {
         super(title);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(startPage);
@@ -27,7 +32,11 @@ public class TransactionAppGUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(e.getSource()==viewMoreTransactionsButton){
-                    new transactions("Transactions page");
+                    try {
+                        new Transactions("Transactions page");
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
                 }
             }
         });
@@ -37,7 +46,11 @@ public class TransactionAppGUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(e.getSource()==addTransactionButton){
-                    new addingTransaction("Adding Transaction page");
+                    try {
+                        new AddingTransaction("Adding Transaction page");
+                    } catch (ParseException parseException) {
+                        parseException.printStackTrace();
+                    }
                 }
             }
         });
@@ -47,7 +60,7 @@ public class TransactionAppGUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(e.getSource()==viewMoreProfitButton){
-                    new profit("Profit page");
+                    new Profit("Profit page");
                 }
             }
         });
@@ -57,28 +70,41 @@ public class TransactionAppGUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(e.getSource()==viewMoreEquipmentButton){
-                    new equipment("Equipment, Medicines & Feed page");
+                    new Equipment("Equipment, Medicines & Feed page");
                 }
             }
         });
 
+        //Adding the table of last transactions to the window
+        Vector<String> columnNames = new Vector<String>();
+        columnNames.add("Date");
+        columnNames.add("Type");
+        columnNames.add("Amount");
+        columnNames.add("Source");
+        Vector<Vector> data = new Vector<Vector>();
+        List<Transaction> list = DBUtil.getLastTransactions();
+        for(Transaction element: list){
+            Vector<String> row = new Vector<String>();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyy");
+            String date = sdf.format(element.getDate());
+            row.add(date);
+            row.add(element.getType());
+            row.add(String.format("%.1f",element.getAmount()));
+            row.add(element.getSource());
+            data.add(row);
+        }
+        lastTransactionsTable.setModel(new DefaultTableModel(data, columnNames));
+
     }
 
     public static void main(String[] args) throws Exception {
+
+        //Setting the window characteristics
         JFrame transactionAppGUI = new TransactionAppGUI("Horse Stable Diary");
         transactionAppGUI.setSize(720,420);
         transactionAppGUI.setLocationRelativeTo(null);
         transactionAppGUI.setVisible(true);
 
-
-        Transaction tr1 = new Transaction();
-        tr1.setDateFromString("25-09-2004");
-        tr1.setAmount(2000f);
-        tr1.setSource("Horse riding");
-        tr1.setType("Income");
-        DBUtil.addTransaction(tr1);
-
-        DBUtil.delTransaction(3);
-        DBUtil.getAllTransactions();
     }
+
 }

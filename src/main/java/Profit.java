@@ -1,6 +1,6 @@
 import javax.swing.*;
 
-public class profit extends JFrame {
+public class Profit extends JFrame {
     private JPanel profit;
     private JLabel monthLabel;
     private JLabel amountLabel;
@@ -9,10 +9,10 @@ public class profit extends JFrame {
     private JComboBox showProfitForComboBox;
     private JLabel showProfitForLabel;
 
-    public profit(String title){
+    public Profit(String title){
         super(title);
         setContentPane(profit);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(720,420);
         setLocationRelativeTo(null);
         setVisible(true);

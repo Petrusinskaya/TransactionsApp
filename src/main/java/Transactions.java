@@ -1,6 +1,13 @@
-import javax.swing.*;
+import model.Transaction;
+import util.DBUtil;
 
-public class transactions extends JFrame{
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Vector;
+
+public class Transactions extends JFrame{
 
     private JPanel transactions;
     private JComboBox timeComboBox;
@@ -13,11 +20,12 @@ public class transactions extends JFrame{
     private JLabel typeLabel;
     private JLabel amountLabel;
     private JLabel sourceLabel;
+    private JTable allTransactionsTable;
 
-    public transactions(String title){
+    public Transactions(String title) throws Exception {
         super(title);
         setContentPane(transactions);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(720,420);
         setLocationRelativeTo(null);
         setVisible(true);
@@ -49,6 +57,26 @@ public class transactions extends JFrame{
         sourceComboBox.addItem("Performance");
         sourceComboBox.addItem("Manure sale");
         sourceComboBox.addItem("Other");
+
+        //Adding the table of last transactions to the window
+        Vector<String> columnNames = new Vector<String>();
+        columnNames.add("Date");
+        columnNames.add("Type");
+        columnNames.add("Amount");
+        columnNames.add("Source");
+        Vector<Vector> data = new Vector<Vector>();
+        List<Transaction> list = DBUtil.getAllTransactions();
+        for(Transaction element: list){
+            Vector<String> row = new Vector<String>();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyy");
+            String date = sdf.format(element.getDate());
+            row.add(date);
+            row.add(element.getType());
+            row.add(String.format("%.1f",element.getAmount()));
+            row.add(element.getSource());
+            data.add(row);
+        }
+        allTransactionsTable.setModel(new DefaultTableModel(data, columnNames));
 
     }
 

@@ -6,7 +6,9 @@ import org.h2.tools.Csv;
 import org.h2.tools.SimpleResultSet;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class DBUtil {
 
@@ -31,7 +33,8 @@ public class DBUtil {
      * Method for getting the data from the table of the database
      * @throws Exception
      */
-    public static void getAllTransactions() throws Exception {
+    public static List<Transaction> getAllTransactions() throws Exception {
+        List<Transaction> list = new ArrayList<Transaction>();
         Connection conn = getConnection(); // conn - an object containing the current connection to database
         String sql = "SELECT * FROM \"PUBLIC\".\"TRANSACTIONS\"";
         ResultSet rs = conn.createStatement().executeQuery(sql);
@@ -42,11 +45,10 @@ public class DBUtil {
             tr.setType(rs.getString("Type"));
             tr.setAmount(rs.getFloat("Amount"));
             tr.setSource(rs.getString("Source"));
-
-            // Display values
-            System.out.println(tr);
+            list.add(tr);
         }
         conn.close();
+        return list;
     }
 
     public static Transaction getTransaction(int id) throws Exception {
@@ -67,6 +69,24 @@ public class DBUtil {
         return tr;
     }
 
+    public static List<Transaction> getLastTransactions() throws Exception {
+        List<Transaction> list = new ArrayList<Transaction>();
+        Connection conn = getConnection(); // conn - an object containing the current connection to database
+        PreparedStatement preparedStatement = null;
+        preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS ORDER BY \"Date\" DESC LIMIT 10");
+        ResultSet rs = preparedStatement.executeQuery();
+        Transaction tr = new Transaction();
+        while(rs.next()) {
+            // Retrieve by column name
+            tr.setDate(rs.getDate("Date"));
+            tr.setType(rs.getString("Type"));
+            tr.setAmount(rs.getFloat("Amount"));
+            tr.setSource(rs.getString("Source"));
+            list.add(tr);
+        }
+        conn.close();
+        return list;
+    }
 
     /**
      * Method for adding the data to the table of the database
