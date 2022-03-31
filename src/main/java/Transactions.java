@@ -3,15 +3,14 @@ import model.TransactionTableModel;
 import util.DBUtil;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.text.SimpleDateFormat;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Vector;
 
 public class Transactions extends JFrame{
 
     private JPanel transactions;
-    private JComboBox timeComboBox;
+    private JComboBox periodComboBox;
     private JComboBox typeComboBox;
     private JComboBox amountComboBox;
     private JComboBox sourceComboBox;
@@ -32,10 +31,10 @@ public class Transactions extends JFrame{
         setVisible(true);
 
         //Adding the options to timeComboBox
-        timeComboBox.addItem("Any time");
-        timeComboBox.addItem("Last week");
-        timeComboBox.addItem("Last month");
-        timeComboBox.addItem("Last year");
+        periodComboBox.addItem("Any time");
+        periodComboBox.addItem("Last week");
+        periodComboBox.addItem("Last month");
+        periodComboBox.addItem("Last year");
 
         //Adding the options to typeComboBox
         typeComboBox.addItem("Any type");
@@ -65,6 +64,76 @@ public class Transactions extends JFrame{
         allTransactionsTableModel.setData(list);
         allTransactionsTable.setModel(allTransactionsTableModel);
 
+        sortButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(e.getSource()==sortButton){
+                    switch ((String) periodComboBox.getSelectedItem()) {
+                        case "Any time":
+                            List<Transaction> list = null;
+                            try {
+                                list = DBUtil.getAllTransactions();
+                            } catch (Exception exception) {
+                                exception.printStackTrace();
+                            }
+                            TransactionTableModel allTransactionsTableModel = new TransactionTableModel();
+                            allTransactionsTableModel.setData(list);
+                            allTransactionsTable.setModel(allTransactionsTableModel);
+                            break;
+                        case "Last week":
+                            list = null;
+                            try {
+                                list = DBUtil.getLastWeekTransactions();
+                            } catch (Exception exception) {
+                                exception.printStackTrace();
+                            }
+                            TransactionTableModel lastWeekTransactionsTableModel = new TransactionTableModel();
+                            lastWeekTransactionsTableModel.setData(list);
+                            allTransactionsTable.setModel(lastWeekTransactionsTableModel);
+                            break;
+                        case "Last month":
+                            list = null;
+                            try {
+                                list = DBUtil.getLastMonthTransactions();
+                            } catch (Exception exception) {
+                                exception.printStackTrace();
+                            }
+                            TransactionTableModel lastMonthTransactionsTableModel = new TransactionTableModel();
+                            lastMonthTransactionsTableModel.setData(list);
+                            allTransactionsTable.setModel(lastMonthTransactionsTableModel);
+                            break;
+                        case "Last year":
+                            list = null;
+                            try {
+                                list = DBUtil.getLastYearTransactions();
+                            } catch (Exception exception) {
+                                exception.printStackTrace();
+                            }
+                            TransactionTableModel lastYearTransactionsTableModel = new TransactionTableModel();
+                            lastYearTransactionsTableModel.setData(list);
+                            allTransactionsTable.setModel(lastYearTransactionsTableModel);
+                            break;
+                    }
+                }
+            }
+        });
+
+        unsortButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(e.getSource()==unsortButton){
+                    List<Transaction> list = null;
+                    try {
+                        list = DBUtil.getAllTransactions();
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
+                    TransactionTableModel allTransactionsTableModel = new TransactionTableModel();
+                    allTransactionsTableModel.setData(list);
+                    allTransactionsTable.setModel(allTransactionsTableModel);
+                }
+            }
+        });
     }
 
     public static void main(String[] args){

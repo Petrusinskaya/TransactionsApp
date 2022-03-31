@@ -8,7 +8,7 @@
     <properties/>
     <border type="none"/>
     <children>
-      <component id="de32" class="javax.swing.JComboBox" binding="timeComboBox">
+      <component id="de32" class="javax.swing.JComboBox" binding="periodComboBox">
         <constraints>
           <grid row="0" column="1" row-span="2" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>

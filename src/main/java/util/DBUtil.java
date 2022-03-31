@@ -7,7 +7,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DBUtil {
@@ -74,6 +77,75 @@ public class DBUtil {
         Connection conn = getConnection(); // conn - an object containing the current connection to database
         PreparedStatement preparedStatement = null;
         preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS ORDER BY \"Date\" DESC LIMIT 10");
+        ResultSet rs = preparedStatement.executeQuery();
+        while(rs.next()) {
+            Transaction tr = new Transaction();
+            // Retrieve by column name
+            tr.setDate(rs.getDate("Date"));
+            tr.setType(rs.getString("Type"));
+            tr.setAmount(rs.getFloat("Amount"));
+            tr.setSource(rs.getString("Source"));
+            list.add(tr);
+        }
+        conn.close();
+        return list;
+    }
+
+    public static List<Transaction> getLastWeekTransactions() throws Exception {
+        List<Transaction> list = new ArrayList<Transaction>();
+        Connection conn = getConnection(); // conn - an object containing the current connection to database
+        PreparedStatement preparedStatement = null;
+        preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS WHERE \"Date\" >= ? order by \"Date\" DESC");
+        LocalDate lastWeek = LocalDate.now().minusWeeks(1);
+        Date date = Date.from(lastWeek.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        preparedStatement.setDate(1, sqlDate);
+        ResultSet rs = preparedStatement.executeQuery();
+        while(rs.next()) {
+            Transaction tr = new Transaction();
+            // Retrieve by column name
+            tr.setDate(rs.getDate("Date"));
+            tr.setType(rs.getString("Type"));
+            tr.setAmount(rs.getFloat("Amount"));
+            tr.setSource(rs.getString("Source"));
+            list.add(tr);
+        }
+        conn.close();
+        return list;
+    }
+
+    public static List<Transaction> getLastMonthTransactions() throws Exception {
+        List<Transaction> list = new ArrayList<Transaction>();
+        Connection conn = getConnection(); // conn - an object containing the current connection to database
+        PreparedStatement preparedStatement = null;
+        preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS WHERE \"Date\" >= ? order by \"Date\" DESC");
+        LocalDate lastMonth = LocalDate.now().minusMonths(1);
+        Date date = Date.from(lastMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        preparedStatement.setDate(1, sqlDate);
+        ResultSet rs = preparedStatement.executeQuery();
+        while(rs.next()) {
+            Transaction tr = new Transaction();
+            // Retrieve by column name
+            tr.setDate(rs.getDate("Date"));
+            tr.setType(rs.getString("Type"));
+            tr.setAmount(rs.getFloat("Amount"));
+            tr.setSource(rs.getString("Source"));
+            list.add(tr);
+        }
+        conn.close();
+        return list;
+    }
+
+    public static List<Transaction> getLastYearTransactions() throws Exception {
+        List<Transaction> list = new ArrayList<Transaction>();
+        Connection conn = getConnection(); // conn - an object containing the current connection to database
+        PreparedStatement preparedStatement = null;
+        preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS WHERE \"Date\" >= ? order by \"Date\" DESC");
+        LocalDate lastWeek = LocalDate.now().minusYears(1);
+        Date date = Date.from(lastWeek.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        preparedStatement.setDate(1, sqlDate);
         ResultSet rs = preparedStatement.executeQuery();
         while(rs.next()) {
             Transaction tr = new Transaction();
