@@ -16,10 +16,6 @@ public class Transactions extends JFrame{
     private JComboBox sourceComboBox;
     private JButton sortButton;
     private JButton unsortButton;
-    private JLabel dateLabel;
-    private JLabel typeLabel;
-    private JLabel amountLabel;
-    private JLabel sourceLabel;
     private JTable allTransactionsTable;
 
     public Transactions(String title) throws Exception {
@@ -48,6 +44,7 @@ public class Transactions extends JFrame{
         amountComboBox.addItem(">20000");
 
         //Adding the options to sourceComboBox
+        sourceComboBox.addItem("Any source");
         sourceComboBox.addItem("Equipment");
         sourceComboBox.addItem("Feed");
         sourceComboBox.addItem("Medicines");
@@ -56,7 +53,6 @@ public class Transactions extends JFrame{
         sourceComboBox.addItem("Photo-shoot");
         sourceComboBox.addItem("Performance");
         sourceComboBox.addItem("Manure sale");
-        sourceComboBox.addItem("Other");
 
         //Adding the table of last transactions to the window
         List<Transaction> list = DBUtil.getAllTransactions();
@@ -68,51 +64,19 @@ public class Transactions extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(e.getSource()==sortButton){
-                    switch ((String) periodComboBox.getSelectedItem()) {
-                        case "Any time":
-                            List<Transaction> list = null;
-                            try {
-                                list = DBUtil.getAllTransactions();
-                            } catch (Exception exception) {
-                                exception.printStackTrace();
-                            }
-                            TransactionTableModel allTransactionsTableModel = new TransactionTableModel();
-                            allTransactionsTableModel.setData(list);
-                            allTransactionsTable.setModel(allTransactionsTableModel);
-                            break;
-                        case "Last week":
-                            list = null;
-                            try {
-                                list = DBUtil.getLastWeekTransactions();
-                            } catch (Exception exception) {
-                                exception.printStackTrace();
-                            }
-                            TransactionTableModel lastWeekTransactionsTableModel = new TransactionTableModel();
-                            lastWeekTransactionsTableModel.setData(list);
-                            allTransactionsTable.setModel(lastWeekTransactionsTableModel);
-                            break;
-                        case "Last month":
-                            list = null;
-                            try {
-                                list = DBUtil.getLastMonthTransactions();
-                            } catch (Exception exception) {
-                                exception.printStackTrace();
-                            }
-                            TransactionTableModel lastMonthTransactionsTableModel = new TransactionTableModel();
-                            lastMonthTransactionsTableModel.setData(list);
-                            allTransactionsTable.setModel(lastMonthTransactionsTableModel);
-                            break;
-                        case "Last year":
-                            list = null;
-                            try {
-                                list = DBUtil.getLastYearTransactions();
-                            } catch (Exception exception) {
-                                exception.printStackTrace();
-                            }
-                            TransactionTableModel lastYearTransactionsTableModel = new TransactionTableModel();
-                            lastYearTransactionsTableModel.setData(list);
-                            allTransactionsTable.setModel(lastYearTransactionsTableModel);
-                            break;
+                    List<Transaction> list = null;
+                    String date = (String) periodComboBox.getSelectedItem();
+                    String type = (String) typeComboBox.getSelectedItem();
+                    String amount = (String) amountComboBox.getSelectedItem();
+                    String source = (String) sourceComboBox.getSelectedItem();
+                    try {
+                        //Adding the table of filtered transactions to the window
+                        list = DBUtil.filterTransactions(date, type, amount, source);
+                        TransactionTableModel filteredModel = new TransactionTableModel();
+                        filteredModel.setData(list);
+                        allTransactionsTable.setModel(filteredModel);
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
                     }
                 }
             }
@@ -135,6 +99,18 @@ public class Transactions extends JFrame{
             }
         });
     }
+
+//    public static void freeSort(JTable table){
+//        List<Transaction> list = null;
+//        try {
+//            list = DBUtil.getAllTransactions();
+//        } catch (Exception exception) {
+//            exception.printStackTrace();
+//        }
+//        TransactionTableModel allTransactionsTableModel = new TransactionTableModel();
+//        allTransactionsTableModel.setData(list);
+//        table.setModel(allTransactionsTableModel);
+//    }
 
     public static void main(String[] args){
         JFrame transactions = new JFrame("Transactions page");

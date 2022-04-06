@@ -1,5 +1,6 @@
 package util;
 
+import model.Profit;
 import model.Transaction;
 import org.h2.jdbcx.JdbcConnectionPool;
 
@@ -91,16 +92,82 @@ public class DBUtil {
         return list;
     }
 
-    public static List<Transaction> getLastWeekTransactions() throws Exception {
+    public static List<Transaction> filterTransactions(String date, String type, String amount, String source) throws Exception {
         List<Transaction> list = new ArrayList<Transaction>();
         Connection conn = getConnection(); // conn - an object containing the current connection to database
-        PreparedStatement preparedStatement = null;
-        preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS WHERE \"Date\" >= ? order by \"Date\" DESC");
-        LocalDate lastWeek = LocalDate.now().minusWeeks(1);
-        Date date = Date.from(lastWeek.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-        preparedStatement.setDate(1, sqlDate);
+        //PreparedStatement preparedStatement = null;
+        int index = 1;
+        String sql = "SELECT * FROM TRANSACTIONS WHERE 1=1 <<DATE>> <<TYPE>> <<AMOUNT>> <<SOURCE>> ORDER BY \"Date\" DESC";
+
+        if (!"Any time".equals(date)){
+            sql = sql.replaceAll("<<DATE>>","AND \"Date\">=?");
+        }
+        else {
+            sql = sql.replaceAll("<<DATE>>","");
+        }
+
+        if (!"Any type".equals(type)){
+            sql = sql.replaceAll("<<TYPE>>","AND \"Type\"=?");
+        }
+        else{
+            sql = sql.replaceAll("<<TYPE>>","");
+        }
+
+        if (!"Any amount".equals(amount)){
+            sql = sql.replaceAll("<<AMOUNT>>","AND \"AMOUNT\">=?");
+        }
+        else{
+            sql = sql.replaceAll("<<AMOUNT>>","");
+        }
+
+        if (!"Any source".equals(source)){
+            sql = sql.replaceAll("<<SOURCE>>","AND \"Source\"=?");
+        }
+        else{
+            sql = sql.replaceAll("<<SOURCE>>","");
+        }
+
+        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        //preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS WHERE \"Date\">=? AND \"Type\"==? AND \"Amount\"==? AND \"Source\"==? order by \"Date\" DESC");
+
+        LocalDate localDate = LocalDate.now();
+        switch (date){
+            case "Any time":
+
+                break;
+            case "Last week":
+                localDate = localDate.minusWeeks(1);
+                break;
+            case "Last month":
+                localDate = localDate.minusMonths(1);
+                break;
+            case "Last year":
+                localDate = localDate.minusYears(1);
+                break;
+        }
+
+        Date dateToString = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        java.sql.Date sqlDate = new java.sql.Date(dateToString.getTime());
+
+        if (!"Any time".equals(date)){
+            preparedStatement.setDate(index++, sqlDate);
+        }
+
+        if (!"Any type".equals(type)){
+            preparedStatement.setString(index++, type);
+        }
+
+        if (!"Any amount".equals(amount)){
+            Float floatAmount = Float.valueOf(amount.substring(1,amount.length()));
+            preparedStatement.setFloat(index++, floatAmount);
+        }
+
+        if (!"Any source".equals(source)){
+            preparedStatement.setString(index++, source);
+        }
+
         ResultSet rs = preparedStatement.executeQuery();
+
         while(rs.next()) {
             Transaction tr = new Transaction();
             // Retrieve by column name
@@ -114,51 +181,77 @@ public class DBUtil {
         return list;
     }
 
-    public static List<Transaction> getLastMonthTransactions() throws Exception {
-        List<Transaction> list = new ArrayList<Transaction>();
-        Connection conn = getConnection(); // conn - an object containing the current connection to database
-        PreparedStatement preparedStatement = null;
-        preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS WHERE \"Date\" >= ? order by \"Date\" DESC");
-        LocalDate lastMonth = LocalDate.now().minusMonths(1);
-        Date date = Date.from(lastMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-        preparedStatement.setDate(1, sqlDate);
-        ResultSet rs = preparedStatement.executeQuery();
-        while(rs.next()) {
-            Transaction tr = new Transaction();
-            // Retrieve by column name
-            tr.setDate(rs.getDate("Date"));
-            tr.setType(rs.getString("Type"));
-            tr.setAmount(rs.getFloat("Amount"));
-            tr.setSource(rs.getString("Source"));
-            list.add(tr);
-        }
-        conn.close();
-        return list;
-    }
+//    public static List<Transaction> getLastWeekTransactions(String type, String amount, String source) throws Exception {
+//        List<Transaction> list = new ArrayList<Transaction>();
+//        Connection conn = getConnection(); // conn - an object containing the current connection to database
+//        PreparedStatement preparedStatement = null;
+//        preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS WHERE \"Date\">=? AND \"Type\"==? AND \"Amount\"==? AND \"Source\"==? order by \"Date\" DESC");
+//        LocalDate lastWeek = LocalDate.now().minusWeeks(1);
+//        Date date = Date.from(lastWeek.atStartOfDay(ZoneId.systemDefault()).toInstant());
+//        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+//        preparedStatement.setDate(1, sqlDate);
+//        preparedStatement.setString(2, type);
+//        preparedStatement.setString(3, amount);
+//        preparedStatement.setString(4, source);
+//        ResultSet rs = preparedStatement.executeQuery();
+//        while(rs.next()) {
+//            Transaction tr = new Transaction();
+//            // Retrieve by column name
+//            tr.setDate(rs.getDate("Date"));
+//            tr.setType(rs.getString("Type"));
+//            tr.setAmount(rs.getFloat("Amount"));
+//            tr.setSource(rs.getString("Source"));
+//            list.add(tr);
+//        }
+//        conn.close();
+//        return list;
+//    }
 
-    public static List<Transaction> getLastYearTransactions() throws Exception {
-        List<Transaction> list = new ArrayList<Transaction>();
-        Connection conn = getConnection(); // conn - an object containing the current connection to database
-        PreparedStatement preparedStatement = null;
-        preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS WHERE \"Date\" >= ? order by \"Date\" DESC");
-        LocalDate lastWeek = LocalDate.now().minusYears(1);
-        Date date = Date.from(lastWeek.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-        preparedStatement.setDate(1, sqlDate);
-        ResultSet rs = preparedStatement.executeQuery();
-        while(rs.next()) {
-            Transaction tr = new Transaction();
-            // Retrieve by column name
-            tr.setDate(rs.getDate("Date"));
-            tr.setType(rs.getString("Type"));
-            tr.setAmount(rs.getFloat("Amount"));
-            tr.setSource(rs.getString("Source"));
-            list.add(tr);
-        }
-        conn.close();
-        return list;
-    }
+//    public static List<Transaction> getLastMonthTransactions() throws Exception {
+//        List<Transaction> list = new ArrayList<Transaction>();
+//        Connection conn = getConnection(); // conn - an object containing the current connection to database
+//        PreparedStatement preparedStatement = null;
+//        preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS WHERE \"Date\" >= ? order by \"Date\" DESC");
+//        LocalDate lastMonth = LocalDate.now().minusMonths(1);
+//        Date date = Date.from(lastMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
+//        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+//        preparedStatement.setDate(1, sqlDate);
+//        ResultSet rs = preparedStatement.executeQuery();
+//        while(rs.next()) {
+//            Transaction tr = new Transaction();
+//            // Retrieve by column name
+//            tr.setDate(rs.getDate("Date"));
+//            tr.setType(rs.getString("Type"));
+//            tr.setAmount(rs.getFloat("Amount"));
+//            tr.setSource(rs.getString("Source"));
+//            list.add(tr);
+//        }
+//        conn.close();
+//        return list;
+//    }
+
+//    public static List<Transaction> getLastYearTransactions() throws Exception {
+//        List<Transaction> list = new ArrayList<Transaction>();
+//        Connection conn = getConnection(); // conn - an object containing the current connection to database
+//        PreparedStatement preparedStatement = null;
+//        preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS WHERE \"Date\" >= ? order by \"Date\" DESC");
+//        LocalDate lastWeek = LocalDate.now().minusYears(1);
+//        Date date = Date.from(lastWeek.atStartOfDay(ZoneId.systemDefault()).toInstant());
+//        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+//        preparedStatement.setDate(1, sqlDate);
+//        ResultSet rs = preparedStatement.executeQuery();
+//        while(rs.next()) {
+//            Transaction tr = new Transaction();
+//            // Retrieve by column name
+//            tr.setDate(rs.getDate("Date"));
+//            tr.setType(rs.getString("Type"));
+//            tr.setAmount(rs.getFloat("Amount"));
+//            tr.setSource(rs.getString("Source"));
+//            list.add(tr);
+//        }
+//        conn.close();
+//        return list;
+//    }
 
     /**
      * Method for adding the data to the table of the database
@@ -189,4 +282,45 @@ public class DBUtil {
         preparedStatement.executeUpdate();
         conn.close();
     }
+
+    public static List<Profit> getAllProfits() throws Exception {
+        Connection conn = getConnection(); // conn - an object containing the current connection to database
+        String sql = "SELECT DATE_TRUNC(MONTH, \"Date\") AS DATECUT, \"Type\", SUM(AMOUNT) AS SUM FROM TRANSACTIONS GROUP BY DATECUT, \"Type\" ORDER BY DATECUT";
+        ResultSet rs = conn.createStatement().executeQuery(sql);
+
+        Date prevDate = null;
+        Float prevTypeIncomeSum = 0f;
+        Float prevTypeExpenseSum = 0f;
+        String prevSum = null;
+
+        ArrayList<Profit> profitList = new ArrayList<Profit>();
+        while(rs.next()){
+            Date date = rs.getDate("DATECUT");
+            if (!date.equals(prevDate) && prevDate!=null) {
+                Profit profit = new Profit();
+                profit.setPeriod(prevDate);
+                profit.setProfit(prevTypeIncomeSum-prevTypeExpenseSum);
+                profitList.add(profit);
+                prevTypeIncomeSum=0f;
+                prevTypeExpenseSum=0f;
+            }
+            String type = rs.getString("Type");
+            if ("Income".equals(type)){
+                prevTypeIncomeSum = rs.getFloat("SUM");
+            }
+            else{
+                prevTypeExpenseSum = rs.getFloat("SUM");
+            }
+            prevDate = date;
+        }
+
+        Profit profit = new Profit();
+        profit.setPeriod(prevDate);
+        profit.setProfit(prevTypeIncomeSum-prevTypeExpenseSum);
+        profitList.add(profit);
+
+        conn.close();
+        return profitList;
+    }
+
 }

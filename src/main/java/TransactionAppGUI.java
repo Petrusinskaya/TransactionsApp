@@ -58,7 +58,11 @@ public class TransactionAppGUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(e.getSource()==viewMoreProfitButton){
-                    new Profit("Profit page");
+                    try {
+                        new Profit("Profit page");
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
                 }
             }
         });
