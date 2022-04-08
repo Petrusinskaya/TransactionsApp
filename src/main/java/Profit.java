@@ -4,15 +4,16 @@ import util.DBUtil;
 import javax.swing.*;
 import java.util.List;
 
+
 public class Profit extends JFrame {
     private JPanel profit;
     private JLabel monthLabel;
-    private JLabel profitDiagramLabel;
     private JLabel mainSourcesOfIncomeLabel;
     private JComboBox showProfitForComboBox;
     private JLabel showProfitForLabel;
     private JTable profitTable;
     private JLabel amountLabel;
+    private JLabel profitDiagramLabel;
 
     public Profit(String title) throws Exception {
         super(title);

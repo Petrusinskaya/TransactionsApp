@@ -63,7 +63,7 @@ public class Transaction {
     }
 
     public void setDateFromString(String dateInString) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
         Date date = sdf.parse(dateInString);
         setDate(date);
     }
