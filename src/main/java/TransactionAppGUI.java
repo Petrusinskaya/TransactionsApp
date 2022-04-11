@@ -11,13 +11,12 @@ import java.util.List;
 public class TransactionAppGUI extends JFrame{
     private JPanel startPage;
     private JLabel lastTransactionsLabel;
-    private JButton viewMoreTransactionsButton;
     private JLabel yourProfitLabel;
-    private JButton viewMoreProfitButton;
-    private JLabel equipmentLabel;
-    private JButton viewMoreEquipmentButton;
     private JButton addTransactionButton;
+    private JButton viewMoreTransactionsButton;
+    private JButton viewProfitPageButton;
     private JTable lastTransactionsTable;
+    private JTable table1;
 
     public TransactionAppGUI(String title) throws Exception {
         super(title);
@@ -25,19 +24,11 @@ public class TransactionAppGUI extends JFrame{
         this.setContentPane(startPage);
         this.pack();
 
-        //An algorithm for opening the Transactions page window
-        viewMoreTransactionsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(e.getSource()==viewMoreTransactionsButton){
-                    try {
-                        new Transactions("Transactions page");
-                    } catch (Exception exception) {
-                        exception.printStackTrace();
-                    }
-                }
-            }
-        });
+        //Adding the table of last transactions to the window
+        List<Transaction> list = DBUtil.getLastTransactions();
+        TransactionTableModel lastTransactionsTableModel = new TransactionTableModel();
+        lastTransactionsTableModel.setData(list);
+        lastTransactionsTable.setModel(lastTransactionsTableModel);
 
         //An algorithm for opening the Adding Transaction page window
         addTransactionButton.addActionListener(new ActionListener() {
@@ -53,11 +44,25 @@ public class TransactionAppGUI extends JFrame{
             }
         });
 
-        //An algorithm for opening the Profit page window
-        viewMoreProfitButton.addActionListener(new ActionListener() {
+        //An algorithm for opening the Transactions page window
+        viewMoreTransactionsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(e.getSource()==viewMoreProfitButton){
+                if(e.getSource()==viewMoreTransactionsButton){
+                    try {
+                        new Transactions("Transactions page");
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        //An algorithm for opening the Profit page window
+        viewProfitPageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(e.getSource()== viewProfitPageButton){
                     try {
                         new Profit("Profit page");
                     } catch (Exception exception) {
@@ -66,22 +71,6 @@ public class TransactionAppGUI extends JFrame{
                 }
             }
         });
-
-        //An algorithm for opening the Equipment, Medicines & Feed page window
-        viewMoreEquipmentButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(e.getSource()==viewMoreEquipmentButton){
-                    new Equipment("Equipment, Medicines & Feed page");
-                }
-            }
-        });
-
-        //Adding the table of last transactions to the window
-        List<Transaction> list = DBUtil.getLastTransactions();
-        TransactionTableModel lastTransactionsTableModel = new TransactionTableModel();
-        lastTransactionsTableModel.setData(list);
-        lastTransactionsTable.setModel(lastTransactionsTableModel);
 
     }
 

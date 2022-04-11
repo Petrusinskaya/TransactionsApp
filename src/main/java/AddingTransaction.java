@@ -122,7 +122,7 @@ public class AddingTransaction extends JFrame {
                     case "August":
                         month[0] = "08";
                         break;
-                    case "Septebmer":
+                    case "September":
                         month[0] = "09";
                         break;
                     case "October":

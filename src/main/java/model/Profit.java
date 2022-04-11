@@ -6,6 +6,8 @@ import java.util.Date;
 public class Profit {
     Date period;
     Float profit;
+    int x;
+    int y;
 
     @Override
     public String toString() {
@@ -13,6 +15,22 @@ public class Profit {
                 "month=" + period +
                 ", profit=" + profit +
                 '}';
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 
     public Date getPeriod() {
@@ -33,6 +51,11 @@ public class Profit {
 
     public String getPeriodAsString() {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM yyyy");
+        return sdf.format(period);
+    }
+
+    public String getShortPeriodAsString() {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM-yy");
         return sdf.format(period);
     }
 

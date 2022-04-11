@@ -40,7 +40,7 @@ public class DBUtil {
     public static List<Transaction> getAllTransactions() throws Exception {
         List<Transaction> list = new ArrayList<Transaction>();
         Connection conn = getConnection(); // conn - an object containing the current connection to database
-        String sql = "SELECT * FROM \"PUBLIC\".\"TRANSACTIONS\"";
+        String sql = "SELECT * FROM \"PUBLIC\".\"TRANSACTIONS\" ORDER BY \"Date\"";
         ResultSet rs = conn.createStatement().executeQuery(sql);
         while(rs.next()) {
             Transaction tr = new Transaction();
@@ -77,7 +77,7 @@ public class DBUtil {
         List<Transaction> list = new ArrayList<Transaction>();
         Connection conn = getConnection(); // conn - an object containing the current connection to database
         PreparedStatement preparedStatement = null;
-        preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS ORDER BY \"Date\" DESC LIMIT 10");
+        preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS ORDER BY \"Date\" DESC LIMIT 17");
         ResultSet rs = preparedStatement.executeQuery();
         while(rs.next()) {
             Transaction tr = new Transaction();
@@ -287,6 +287,58 @@ public class DBUtil {
         Connection conn = getConnection(); // conn - an object containing the current connection to database
         String sql = "SELECT DATE_TRUNC(MONTH, \"Date\") AS DATECUT, \"Type\", SUM(AMOUNT) AS SUM FROM TRANSACTIONS GROUP BY DATECUT, \"Type\" ORDER BY DATECUT";
         ResultSet rs = conn.createStatement().executeQuery(sql);
+
+        Date prevDate = null;
+        Float prevTypeIncomeSum = 0f;
+        Float prevTypeExpenseSum = 0f;
+        String prevSum = null;
+
+        ArrayList<Profit> profitList = new ArrayList<Profit>();
+        while(rs.next()){
+            Date date = rs.getDate("DATECUT");
+            if (!date.equals(prevDate) && prevDate!=null) {
+                Profit profit = new Profit();
+                profit.setPeriod(prevDate);
+                profit.setProfit(prevTypeIncomeSum-prevTypeExpenseSum);
+                profitList.add(profit);
+                prevTypeIncomeSum=0f;
+                prevTypeExpenseSum=0f;
+            }
+            String type = rs.getString("Type");
+            if ("Income".equals(type)){
+                prevTypeIncomeSum = rs.getFloat("SUM");
+            }
+            else{
+                prevTypeExpenseSum = rs.getFloat("SUM");
+            }
+            prevDate = date;
+        }
+
+        Profit profit = new Profit();
+        profit.setPeriod(prevDate);
+        profit.setProfit(prevTypeIncomeSum-prevTypeExpenseSum);
+        profitList.add(profit);
+
+        conn.close();
+        return profitList;
+    }
+
+    public static List<Profit> getProfits(String period) throws Exception {
+        Connection conn = getConnection(); // conn - an object containing the current connection to database
+        LocalDate periodDiff;
+        if("QUARTER".equals(period)){
+            periodDiff = LocalDate.now().minusMonths(3);
+        }
+        else {
+            periodDiff = LocalDate.now().minusYears(1);
+        }
+
+        String sql = "SELECT DATE_TRUNC(MONTH, \"Date\") AS DATECUT, \"Type\", SUM(AMOUNT) AS SUM FROM TRANSACTIONS GROUP BY DATECUT, \"Type\" HAVING DATECUT>? ORDER BY DATECUT";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        Date transferDate = Date.from(periodDiff.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        java.sql.Date sqlDate = new java.sql.Date(transferDate.getTime());
+        ps.setDate(1,sqlDate);
+        ResultSet rs = ps.executeQuery();
 
         Date prevDate = null;
         Float prevTypeIncomeSum = 0f;

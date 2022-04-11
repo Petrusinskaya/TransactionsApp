@@ -1,38 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Profit">
-  <grid id="27dc6" binding="profit" layout-manager="GridLayoutManager" row-count="7" column-count="10" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="profit" layout-manager="GridLayoutManager" row-count="9" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="546" height="400"/>
+      <xy x="20" y="20" width="962" height="464"/>
     </constraints>
     <properties/>
     <border type="none"/>
     <children>
       <component id="10e5a" class="javax.swing.JLabel" binding="monthLabel">
         <constraints>
-          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="1" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="1" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Month"/>
         </properties>
       </component>
-      <component id="fd62b" class="javax.swing.JLabel" binding="mainSourcesOfIncomeLabel">
-        <constraints>
-          <grid row="5" column="8" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="1" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Main sources of income"/>
-        </properties>
-      </component>
-      <component id="b9c71" class="javax.swing.JComboBox" binding="showProfitForComboBox">
-        <constraints>
-          <grid row="4" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties/>
-      </component>
       <component id="8fb9d" class="javax.swing.JTable" binding="profitTable">
         <constraints>
-          <grid row="1" column="1" row-span="5" col-span="2" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="2" column="1" row-span="5" col-span="2" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="50"/>
           </grid>
         </constraints>
@@ -40,7 +26,7 @@
       </component>
       <component id="a1d6a" class="javax.swing.JLabel" binding="amountLabel">
         <constraints>
-          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="1" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="1" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Profit"/>
@@ -48,49 +34,72 @@
       </component>
       <vspacer id="f3b4a">
         <constraints>
-          <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="7" column="1" row-span="2" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
-      <component id="5d115" class="javax.swing.JLabel" binding="showProfitForLabel">
-        <constraints>
-          <grid row="4" column="4" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Show profit for"/>
-        </properties>
-      </component>
-      <grid id="be49" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="0" left="0" bottom="0" right="0"/>
-        <constraints>
-          <grid row="1" column="4" row-span="3" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties/>
-        <border type="none"/>
-        <children/>
-      </grid>
-      <hspacer id="2fa74">
-        <constraints>
-          <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-      </hspacer>
-      <hspacer id="7373d">
-        <constraints>
-          <grid row="1" column="9" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-      </hspacer>
       <vspacer id="148ba">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
       <component id="e75e5" class="javax.swing.JLabel" binding="profitDiagramLabel">
         <constraints>
-          <grid row="0" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="3" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Profit Diagram"/>
         </properties>
       </component>
+      <component id="8c14a" class="util.MyPanel" binding="myPanel" custom-create="true">
+        <constraints>
+          <grid row="3" column="3" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <minimum-size width="500" height="240"/>
+            <preferred-size width="500" height="240"/>
+            <maximum-size width="500" height="240"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="5d115" class="javax.swing.JLabel" binding="showProfitForLabel">
+        <constraints>
+          <grid row="5" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Show profit for"/>
+        </properties>
+      </component>
+      <component id="fd62b" class="javax.swing.JLabel" binding="mainSourcesOfIncomeLabel">
+        <constraints>
+          <grid row="6" column="3" row-span="3" col-span="3" vsize-policy="0" hsize-policy="0" anchor="1" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Main sources of income"/>
+        </properties>
+      </component>
+      <vspacer id="9b1fa">
+        <constraints>
+          <grid row="0" column="3" row-span="1" col-span="2" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <component id="1ba3c" class="javax.swing.JComboBox" binding="showProfitForComboBox">
+        <constraints>
+          <grid row="5" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="cddb0" class="javax.swing.JTable" binding="incomeSourcesTable">
+        <constraints>
+          <grid row="8" column="4" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="50"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <vspacer id="de68f">
+        <constraints>
+          <grid row="3" column="5" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
     </children>
   </grid>
 </form>
