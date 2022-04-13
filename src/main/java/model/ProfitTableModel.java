@@ -12,6 +12,10 @@ public class ProfitTableModel extends DefaultTableModel {
         setColumnIdentifiers(columnNames);
     }
 
+    public ProfitTableModel(List<Profit> list) {
+        this();
+        setData(list);
+    }
     public void setData(List<Profit> list) {
         for(Profit element: list){
             Vector<String> row = new Vector<String>();

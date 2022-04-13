@@ -171,11 +171,27 @@ public class DBUtil {
         return list;
     }
 
-    public static List<Profit> getAllProfits() throws Exception {
+    public static List<Profit> getAllProfits(String period) throws Exception {
         Connection conn = getConnection(); // conn - an object containing the current connection to database
-        String sql = "SELECT DATE_TRUNC(MONTH, \"Date\") AS DATECUT, \"Type\", SUM(AMOUNT) AS SUM FROM TRANSACTIONS GROUP BY DATECUT, \"Type\" ORDER BY DATECUT";
-        ResultSet rs = conn.createStatement().executeQuery(sql);
-
+        String sql = "SELECT DATE_TRUNC(MONTH, \"Date\") AS DATECUT, \"Type\", SUM(AMOUNT) AS SUM FROM TRANSACTIONS <<WHERE_PERIOD>> GROUP BY DATECUT, \"Type\" ORDER BY DATECUT";
+        if(period!=null && !"".equals(period)){
+            sql = sql.replaceAll("<<WHERE_PERIOD>>", " WHERE \"Date\" > ? ");
+        }else{
+            sql = sql.replaceAll("<<WHERE_PERIOD>>", "");
+        }
+        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        LocalDate whereDate = LocalDate.now();
+        if("last year".equals(period)){
+            whereDate = whereDate.minusYears(1);
+        }else if("quarter".equals(period)){
+            whereDate = whereDate.minusMonths(3);
+        }
+        if(period!=null && !"".equals(period)){
+            Date date = Date.from(whereDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+            preparedStatement.setDate(1, sqlDate);
+        }
+        ResultSet rs = preparedStatement.executeQuery();
         Date prevDate = null;
         Float prevTypeIncomeSum = 0f;
         Float prevTypeExpenseSum = 0f;
@@ -199,11 +215,12 @@ public class DBUtil {
             }
             prevDate = date;
         }
-
-        Profit profit = new Profit();
-        profit.setPeriod(prevDate);
-        profit.setProfit(prevTypeIncomeSum-prevTypeExpenseSum);
-        profitList.add(profit);
+        if(prevDate!=null) {
+            Profit profit = new Profit();
+            profit.setPeriod(prevDate);
+            profit.setProfit(prevTypeIncomeSum - prevTypeExpenseSum);
+            profitList.add(profit);
+        }
 
         conn.close();
         return profitList;

@@ -2,7 +2,6 @@ import model.ProfitTableModel;
 import model.Transaction;
 import model.TransactionTableModel;
 import util.DBUtil;
-import util.ProfitPanel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -13,16 +12,12 @@ import java.util.List;
 public class TransactionAppGUI extends JFrame{
     private JPanel startPage;
     private JLabel lastTransactionsLabel;
-    private JLabel yourProfitLabel;
     private JButton addTransactionButton;
     private JButton viewMoreTransactionsButton;
     private JButton viewProfitPageButton;
     private JTable lastTransactionsTable;
     private JTable lastProfitsTable;
-    private JPanel profitPanel;
-    private ProfitPanel profitPanel1;
     private JLabel recentProfitLabel;
-    List<model.Profit> profitList;
 
     public TransactionAppGUI(String title) throws Exception {
         super(title);
@@ -37,9 +32,7 @@ public class TransactionAppGUI extends JFrame{
         lastTransactionsTable.setModel(lastTransactionsTableModel);
 
         //Adding the profit table to the window
-        profitList = DBUtil.getLastProfits();
-        ProfitTableModel lastProfits = new ProfitTableModel();
-        lastProfits.setData(profitList);
+        ProfitTableModel lastProfits = new ProfitTableModel(DBUtil.getLastProfits());
         lastProfitsTable.setModel(lastProfits);
 
         //An algorithm for opening the Adding Transaction page window
@@ -103,11 +96,6 @@ public class TransactionAppGUI extends JFrame{
     }
 
     private void createUIComponents() {
-        try {
-            profitPanel1 = new ProfitPanel(DBUtil.getLastProfits());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 }

@@ -50,7 +50,7 @@
           <text value="Profit Diagram"/>
         </properties>
       </component>
-      <component id="8c14a" class="util.MyPanel" binding="myPanel" custom-create="true">
+      <component id="8c14a" class="util.ProfitPanel" binding="myPanel" custom-create="true">
         <constraints>
           <grid row="3" column="3" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="500" height="240"/>
