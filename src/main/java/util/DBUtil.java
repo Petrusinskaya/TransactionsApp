@@ -16,12 +16,12 @@ import java.util.List;
 
 public class DBUtil {
 
-    private static final JdbcConnectionPool cp; //an object that stores database connection pool
+    private static final JdbcConnectionPool cp; // cp is the object that stores database connection pool
     /**
      * Static initialization of DBUtil class
      */
     static {
-        cp = JdbcConnectionPool.create("jdbc:h2:./myTransactions.db", "sa", ""); // creates database connection pool
+        cp = JdbcConnectionPool.create("jdbc:h2:./myTransactions.db", "sa", ""); // creating database connection pool
     }
 
     /**
@@ -34,7 +34,42 @@ public class DBUtil {
     }
 
     /**
-     * Method for getting the data from the table of the database
+     * Method for adding the transaction to the transactions table of the database
+     */
+    public static void addTransaction(Transaction tr) throws SQLException {
+        Connection conn = getConnection(); // conn - an object containing the current connection to database
+        String sql = "INSERT INTO PUBLIC.TRANSACTIONS (\"Date\",\"Type\",AMOUNT,\"Source\") VALUES (?,?,?,?)";
+        PreparedStatement preparedStatement = null;
+        preparedStatement = conn.prepareStatement(sql);
+        java.sql.Date date = new java.sql.Date(tr.getDate().getTime());
+        preparedStatement.setDate(1, date);
+        preparedStatement.setString(2, tr.getType());
+        preparedStatement.setFloat(3, tr.getAmount());
+        preparedStatement.setString(4, tr.getSource());
+        preparedStatement.executeUpdate();
+        conn.close();
+    }
+
+    public static List<Transaction> getLastTransactions() throws Exception {
+        List<Transaction> list = new ArrayList<Transaction>();
+        Connection conn = getConnection(); // conn - an object containing the current connection to database
+        PreparedStatement preparedStatement = null;
+        preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS ORDER BY \"Date\" DESC LIMIT 17");
+        ResultSet rs = preparedStatement.executeQuery();
+        while(rs.next()) {
+            Transaction tr = new Transaction();
+            tr.setDate(rs.getDate("Date"));
+            tr.setType(rs.getString("Type"));
+            tr.setAmount(rs.getFloat("Amount"));
+            tr.setSource(rs.getString("Source"));
+            list.add(tr);
+        }
+        conn.close();
+        return list;
+    }
+
+    /**
+     * Method for getting all transactions from the transactions table in the database
      * @throws Exception
      */
     public static List<Transaction> getAllTransactions() throws Exception {
@@ -55,71 +90,30 @@ public class DBUtil {
         return list;
     }
 
-    public static Transaction getTransaction(int id) throws Exception {
-        Connection conn = getConnection(); // conn - an object containing the current connection to database
-        PreparedStatement preparedStatement = null;
-        preparedStatement = conn.prepareStatement("SELECT * FROM \"PUBLIC\".\"TRANSACTIONS\" WHERE ID=?");
-        preparedStatement.setInt(1, id);
-        ResultSet rs = preparedStatement.executeQuery();
-        Transaction tr = new Transaction();
-        while(rs.next()) {
-            // Retrieve by column name
-            tr.setDate(rs.getDate("Date"));
-            tr.setType(rs.getString("Type"));
-            tr.setAmount(rs.getFloat("Amount"));
-            tr.setSource(rs.getString("Source"));
-        }
-        conn.close();
-        return tr;
-    }
-
-    public static List<Transaction> getLastTransactions() throws Exception {
-        List<Transaction> list = new ArrayList<Transaction>();
-        Connection conn = getConnection(); // conn - an object containing the current connection to database
-        PreparedStatement preparedStatement = null;
-        preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS ORDER BY \"Date\" DESC LIMIT 17");
-        ResultSet rs = preparedStatement.executeQuery();
-        while(rs.next()) {
-            Transaction tr = new Transaction();
-            // Retrieve by column name
-            tr.setDate(rs.getDate("Date"));
-            tr.setType(rs.getString("Type"));
-            tr.setAmount(rs.getFloat("Amount"));
-            tr.setSource(rs.getString("Source"));
-            list.add(tr);
-        }
-        conn.close();
-        return list;
-    }
-
     public static List<Transaction> filterTransactions(String date, String type, String amount, String source) throws Exception {
         List<Transaction> list = new ArrayList<Transaction>();
         Connection conn = getConnection(); // conn - an object containing the current connection to database
-        //PreparedStatement preparedStatement = null;
-        int index = 1;
         String sql = "SELECT * FROM TRANSACTIONS WHERE 1=1 <<DATE>> <<TYPE>> <<AMOUNT>> <<SOURCE>> ORDER BY \"Date\" DESC";
 
+        int index = 1;
         if (!"Any time".equals(date)){
             sql = sql.replaceAll("<<DATE>>","AND \"Date\">=?");
         }
         else {
             sql = sql.replaceAll("<<DATE>>","");
         }
-
         if (!"Any type".equals(type)){
             sql = sql.replaceAll("<<TYPE>>","AND \"Type\"=?");
         }
         else{
             sql = sql.replaceAll("<<TYPE>>","");
         }
-
         if (!"Any amount".equals(amount)){
             sql = sql.replaceAll("<<AMOUNT>>","AND \"AMOUNT\">=?");
         }
         else{
             sql = sql.replaceAll("<<AMOUNT>>","");
         }
-
         if (!"Any source".equals(source)){
             sql = sql.replaceAll("<<SOURCE>>","AND \"Source\"=?");
         }
@@ -128,7 +122,6 @@ public class DBUtil {
         }
 
         PreparedStatement preparedStatement = conn.prepareStatement(sql);
-        //preparedStatement = conn.prepareStatement("SELECT * FROM TRANSACTIONS WHERE \"Date\">=? AND \"Type\"==? AND \"Amount\"==? AND \"Source\"==? order by \"Date\" DESC");
 
         LocalDate localDate = LocalDate.now();
         switch (date){
@@ -152,16 +145,13 @@ public class DBUtil {
         if (!"Any time".equals(date)){
             preparedStatement.setDate(index++, sqlDate);
         }
-
         if (!"Any type".equals(type)){
             preparedStatement.setString(index++, type);
         }
-
         if (!"Any amount".equals(amount)){
             Float floatAmount = Float.valueOf(amount.substring(1,amount.length()));
             preparedStatement.setFloat(index++, floatAmount);
         }
-
         if (!"Any source".equals(source)){
             preparedStatement.setString(index++, source);
         }
@@ -179,6 +169,100 @@ public class DBUtil {
         }
         conn.close();
         return list;
+    }
+
+    public static List<Profit> getAllProfits() throws Exception {
+        Connection conn = getConnection(); // conn - an object containing the current connection to database
+        String sql = "SELECT DATE_TRUNC(MONTH, \"Date\") AS DATECUT, \"Type\", SUM(AMOUNT) AS SUM FROM TRANSACTIONS GROUP BY DATECUT, \"Type\" ORDER BY DATECUT";
+        ResultSet rs = conn.createStatement().executeQuery(sql);
+
+        Date prevDate = null;
+        Float prevTypeIncomeSum = 0f;
+        Float prevTypeExpenseSum = 0f;
+        ArrayList<Profit> profitList = new ArrayList<Profit>();
+        while(rs.next()){
+            Date date = rs.getDate("DATECUT");
+            if (!date.equals(prevDate) && prevDate!=null) {
+                Profit profit = new Profit();
+                profit.setPeriod(prevDate);
+                profit.setProfit(prevTypeIncomeSum-prevTypeExpenseSum);
+                profitList.add(profit);
+                prevTypeIncomeSum=0f;
+                prevTypeExpenseSum=0f;
+            }
+            String type = rs.getString("Type");
+            if ("Income".equals(type)){
+                prevTypeIncomeSum = rs.getFloat("SUM");
+            }
+            else{
+                prevTypeExpenseSum = rs.getFloat("SUM");
+            }
+            prevDate = date;
+        }
+
+        Profit profit = new Profit();
+        profit.setPeriod(prevDate);
+        profit.setProfit(prevTypeIncomeSum-prevTypeExpenseSum);
+        profitList.add(profit);
+
+        conn.close();
+        return profitList;
+    }
+
+    public static List<Profit> getLastProfits() throws Exception {
+        Connection conn = getConnection(); // conn - an object containing the current connection to database
+        String sql = "SELECT DATE_TRUNC(MONTH, \"Date\") AS DATECUT, \"Type\", SUM(AMOUNT) AS SUM FROM TRANSACTIONS GROUP BY DATECUT, \"Type\" ORDER BY DATECUT DESC LIMIT 5";
+        ResultSet rs = conn.createStatement().executeQuery(sql);
+
+        Date prevDate = null;
+        Float prevTypeIncomeSum = 0f;
+        Float prevTypeExpenseSum = 0f;
+        ArrayList<Profit> profitList = new ArrayList<Profit>();
+        while(rs.next()){
+            Date date = rs.getDate("DATECUT");
+            if (!date.equals(prevDate) && prevDate!=null) {
+                Profit profit = new Profit();
+                profit.setPeriod(prevDate);
+                profit.setProfit(prevTypeIncomeSum-prevTypeExpenseSum);
+                profitList.add(profit);
+                prevTypeIncomeSum=0f;
+                prevTypeExpenseSum=0f;
+            }
+            String type = rs.getString("Type");
+            if ("Income".equals(type)){
+                prevTypeIncomeSum = rs.getFloat("SUM");
+            }
+            else{
+                prevTypeExpenseSum = rs.getFloat("SUM");
+            }
+            prevDate = date;
+        }
+
+        Profit profit = new Profit();
+        profit.setPeriod(prevDate);
+        profit.setProfit(prevTypeIncomeSum-prevTypeExpenseSum);
+        profitList.add(profit);
+
+        conn.close();
+        return profitList;
+    }
+
+    public static Transaction getTransaction(int id) throws Exception {
+        Connection conn = getConnection(); // conn - an object containing the current connection to database
+        PreparedStatement preparedStatement = null;
+        preparedStatement = conn.prepareStatement("SELECT * FROM \"PUBLIC\".\"TRANSACTIONS\" WHERE ID=?");
+        preparedStatement.setInt(1, id);
+        ResultSet rs = preparedStatement.executeQuery();
+        Transaction tr = new Transaction();
+        while(rs.next()) {
+            // Retrieve by column name
+            tr.setDate(rs.getDate("Date"));
+            tr.setType(rs.getString("Type"));
+            tr.setAmount(rs.getFloat("Amount"));
+            tr.setSource(rs.getString("Source"));
+        }
+        conn.close();
+        return tr;
     }
 
 //    public static List<Transaction> getLastWeekTransactions(String type, String amount, String source) throws Exception {
@@ -254,23 +338,6 @@ public class DBUtil {
 //    }
 
     /**
-     * Method for adding the data to the table of the database
-     */
-    public static void addTransaction(Transaction tr) throws SQLException {
-        Connection conn = getConnection(); // conn - an object containing the current connection to database
-        String sql = "INSERT INTO PUBLIC.TRANSACTIONS (\"Date\",\"Type\",AMOUNT,\"Source\") VALUES (?,?,?,?)";
-        PreparedStatement preparedStatement = null;
-        preparedStatement = conn.prepareStatement(sql);
-        java.sql.Date date = new java.sql.Date(tr.getDate().getTime());
-        preparedStatement.setDate(1, date);
-        preparedStatement.setString(2, tr.getType());
-        preparedStatement.setFloat(3, tr.getAmount());
-        preparedStatement.setString(4, tr.getSource());
-        preparedStatement.executeUpdate();
-        conn.close();
-    }
-
-    /**
      * Method for deleting the data from the table of the database
      */
     public static void delTransaction(int id) throws SQLException {
@@ -281,46 +348,6 @@ public class DBUtil {
         preparedStatement.setInt(1, id);
         preparedStatement.executeUpdate();
         conn.close();
-    }
-
-    public static List<Profit> getAllProfits() throws Exception {
-        Connection conn = getConnection(); // conn - an object containing the current connection to database
-        String sql = "SELECT DATE_TRUNC(MONTH, \"Date\") AS DATECUT, \"Type\", SUM(AMOUNT) AS SUM FROM TRANSACTIONS GROUP BY DATECUT, \"Type\" ORDER BY DATECUT";
-        ResultSet rs = conn.createStatement().executeQuery(sql);
-
-        Date prevDate = null;
-        Float prevTypeIncomeSum = 0f;
-        Float prevTypeExpenseSum = 0f;
-        String prevSum = null;
-
-        ArrayList<Profit> profitList = new ArrayList<Profit>();
-        while(rs.next()){
-            Date date = rs.getDate("DATECUT");
-            if (!date.equals(prevDate) && prevDate!=null) {
-                Profit profit = new Profit();
-                profit.setPeriod(prevDate);
-                profit.setProfit(prevTypeIncomeSum-prevTypeExpenseSum);
-                profitList.add(profit);
-                prevTypeIncomeSum=0f;
-                prevTypeExpenseSum=0f;
-            }
-            String type = rs.getString("Type");
-            if ("Income".equals(type)){
-                prevTypeIncomeSum = rs.getFloat("SUM");
-            }
-            else{
-                prevTypeExpenseSum = rs.getFloat("SUM");
-            }
-            prevDate = date;
-        }
-
-        Profit profit = new Profit();
-        profit.setPeriod(prevDate);
-        profit.setProfit(prevTypeIncomeSum-prevTypeExpenseSum);
-        profitList.add(profit);
-
-        conn.close();
-        return profitList;
     }
 
     public static List<Profit> getProfits(String period) throws Exception {

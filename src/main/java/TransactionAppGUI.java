@@ -1,6 +1,8 @@
+import model.ProfitTableModel;
 import model.Transaction;
 import model.TransactionTableModel;
 import util.DBUtil;
+import util.ProfitPanel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -16,7 +18,11 @@ public class TransactionAppGUI extends JFrame{
     private JButton viewMoreTransactionsButton;
     private JButton viewProfitPageButton;
     private JTable lastTransactionsTable;
-    private JTable table1;
+    private JTable lastProfitsTable;
+    private JPanel profitPanel;
+    private ProfitPanel profitPanel1;
+    private JLabel recentProfitLabel;
+    List<model.Profit> profitList;
 
     public TransactionAppGUI(String title) throws Exception {
         super(title);
@@ -30,6 +36,12 @@ public class TransactionAppGUI extends JFrame{
         lastTransactionsTableModel.setData(list);
         lastTransactionsTable.setModel(lastTransactionsTableModel);
 
+        //Adding the profit table to the window
+        profitList = DBUtil.getLastProfits();
+        ProfitTableModel lastProfits = new ProfitTableModel();
+        lastProfits.setData(profitList);
+        lastProfitsTable.setModel(lastProfits);
+
         //An algorithm for opening the Adding Transaction page window
         addTransactionButton.addActionListener(new ActionListener() {
             @Override
@@ -37,8 +49,14 @@ public class TransactionAppGUI extends JFrame{
                 if(e.getSource()==addTransactionButton){
                     try {
                         new AddingTransaction("Adding Transaction page");
+//                        List<Transaction> list = DBUtil.getLastTransactions();
+//                        TransactionTableModel lastTransactionsTableModel = new TransactionTableModel();
+//                        lastTransactionsTableModel.setData(list);
+//                        lastTransactionsTable.setModel(lastTransactionsTableModel);
                     } catch (ParseException parseException) {
                         parseException.printStackTrace();
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
                     }
                 }
             }
@@ -82,6 +100,14 @@ public class TransactionAppGUI extends JFrame{
         transactionAppGUI.setLocationRelativeTo(null);
         transactionAppGUI.setVisible(true);
 
+    }
+
+    private void createUIComponents() {
+        try {
+            profitPanel1 = new ProfitPanel(DBUtil.getLastProfits());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
