@@ -59,4 +59,9 @@ public class Profit {
         return sdf.format(period);
     }
 
+    public String getShortestPeriodAsString() {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM");
+        return sdf.format(period);
+    }
+
 }

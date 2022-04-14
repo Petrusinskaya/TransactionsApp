@@ -6,15 +6,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class ProfitPanel extends JPanel {
+public class MiniProfitPanel extends JPanel {
     List<Profit> profitList;
-    static int MAX_X = 500;
-    static int MAX_Y = 240;
+    static int MAX_X = 170;
+    static int MAX_Y = 100;
 
-    public ProfitPanel(){
+    public MiniProfitPanel(){
         //setBorder(BorderFactory.createLineBorder(Color.black));
     }
-    public ProfitPanel(List<Profit> profitList){
+    public MiniProfitPanel(List<Profit> profitList){
         this();
         setProfitList(profitList);
     }
@@ -30,14 +30,14 @@ public class ProfitPanel extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawLine(0,200,480,200); // Horizontal axis
-        g.drawLine(53,0,53,240); // Vertical axis
+        g.drawLine(0,80,160,80); // Horizontal axis
+        g.drawLine(25,0,25,100); // Vertical axis
 
         // Searching for a minimum and maximum profit values
         Float min=0f;
         Float max=0f;
         try {
-            for (int n = 0; n<profitList.size(); n++){
+            for (int n = 0; n< profitList.size(); n++){
                 Float profitN = profitList.get(n).getProfit();
                 if (n==0) {
                     min = profitN;
@@ -56,29 +56,22 @@ public class ProfitPanel extends JPanel {
         }
 
         // Putting months on the x-axis
-        g.drawString(String.valueOf(Math.round(Math.floor(min/1000)))+"k",5,MAX_Y-40);
-        g.drawString(String.valueOf(Math.round(Math.ceil(max)/1000))+"k",5,MAX_Y-230);
-        int x=60;
-        int y=230;
+        g.drawString(String.valueOf(Math.round(min/1000))+"k",0,MAX_Y-5);
+        g.drawString(String.valueOf(Math.round(max)/1000)+"k",0,MAX_Y-90);
+        int x=30;
+        int y=93;
         int i=0;
         int spacerX = 0;
         if (profitList.size()>0){
-            spacerX = (MAX_X - 70) / profitList.size();
+            spacerX = ((MAX_X - 10) / profitList.size())-10;
         }
         Profit prevProfit = null;
         for(Profit p: profitList){
-            g.drawString(p.getShortPeriodAsString(),x,y);
-            if(i%2==0){
-                y=y-15;
-            }
-            else{
-                y=y+15;
-            }
-            i++;
+            g.drawString(p.getShortestPeriodAsString(),x,y);
 
             // Building the graph
             int yPos=Math.round(MAX_Y-(p.getProfit()*MAX_Y)/max);
-            //yPos = yPos-1; // Shifting the position 10 units up
+            yPos = yPos+30; // Shifting the position 10 units down
             g.fillOval(x+5,yPos-2,4,4);
 
             p.setX(x);

@@ -81,7 +81,7 @@ public class AddingTransaction extends JFrame {
 
         //Setting the date
         final String[] day = {"1"};
-        final String[] month = {"January"};
+        final String[] month = {"01"};
         final String[] year = {((Integer) Calendar.getInstance().get(Calendar.YEAR)).toString()};
         dayComboBox.addActionListener(new ActionListener() {
             @Override

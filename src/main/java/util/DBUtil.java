@@ -75,7 +75,7 @@ public class DBUtil {
     public static List<Transaction> getAllTransactions() throws Exception {
         List<Transaction> list = new ArrayList<Transaction>();
         Connection conn = getConnection(); // conn - an object containing the current connection to database
-        String sql = "SELECT * FROM \"PUBLIC\".\"TRANSACTIONS\" ORDER BY \"Date\"";
+        String sql = "SELECT * FROM \"PUBLIC\".\"TRANSACTIONS\" ORDER BY \"Date\" DESC";
         ResultSet rs = conn.createStatement().executeQuery(sql);
         while(rs.next()) {
             Transaction tr = new Transaction();
@@ -228,7 +228,7 @@ public class DBUtil {
 
     public static List<Profit> getLastProfits() throws Exception {
         Connection conn = getConnection(); // conn - an object containing the current connection to database
-        String sql = "SELECT DATE_TRUNC(MONTH, \"Date\") AS DATECUT, \"Type\", SUM(AMOUNT) AS SUM FROM TRANSACTIONS GROUP BY DATECUT, \"Type\" ORDER BY DATECUT DESC LIMIT 5";
+        String sql = "SELECT DATE_TRUNC(MONTH, \"Date\") AS DATECUT, \"Type\", SUM(AMOUNT) AS SUM FROM TRANSACTIONS GROUP BY DATECUT, \"Type\" ORDER BY DATECUT DESC";
         ResultSet rs = conn.createStatement().executeQuery(sql);
 
         Date prevDate = null;

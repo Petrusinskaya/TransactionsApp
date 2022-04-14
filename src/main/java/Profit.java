@@ -11,14 +11,12 @@ import java.util.List;
 public class Profit extends JFrame {
     private JPanel profit;
     private JLabel monthLabel;
-    private JLabel mainSourcesOfIncomeLabel;
     private JComboBox showProfitForComboBox;
     private JLabel showProfitForLabel;
     private JTable profitTable;
     private JLabel amountLabel;
     private JLabel profitDiagramLabel;
     private ProfitPanel myPanel;
-    private JTable incomeSourcesTable;
     List<model.Profit> profitList;
 
     public Profit(String title) throws Exception {
@@ -32,10 +30,11 @@ public class Profit extends JFrame {
 
         //Adding the options to showProfitForComboBox
         showProfitForComboBox.addItem("all the time");
-        //showProfitForComboBox.addItem("quarter");
+        showProfitForComboBox.addItem("quarter");
         showProfitForComboBox.addItem("last year");
 
         ProfitTableModel profitModel = new ProfitTableModel(DBUtil.getAllProfits(""));
+
         profitTable.setModel(profitModel);
 
         showProfitForComboBox.addActionListener(new ActionListener() {

@@ -2,6 +2,7 @@ import model.ProfitTableModel;
 import model.Transaction;
 import model.TransactionTableModel;
 import util.DBUtil;
+import util.MiniProfitPanel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -17,7 +18,8 @@ public class TransactionAppGUI extends JFrame{
     private JButton viewProfitPageButton;
     private JTable lastTransactionsTable;
     private JTable lastProfitsTable;
-    private JLabel recentProfitLabel;
+    private MiniProfitPanel miniProfitPanel1;
+    List<model.Profit> profitList;
 
     public TransactionAppGUI(String title) throws Exception {
         super(title);
@@ -32,7 +34,7 @@ public class TransactionAppGUI extends JFrame{
         lastTransactionsTable.setModel(lastTransactionsTableModel);
 
         //Adding the profit table to the window
-        ProfitTableModel lastProfits = new ProfitTableModel(DBUtil.getLastProfits());
+        ProfitTableModel lastProfits = new ProfitTableModel(DBUtil.getAllProfits("quarter"));
         lastProfitsTable.setModel(lastProfits);
 
         //An algorithm for opening the Adding Transaction page window
@@ -42,10 +44,6 @@ public class TransactionAppGUI extends JFrame{
                 if(e.getSource()==addTransactionButton){
                     try {
                         new AddingTransaction("Adding Transaction page");
-//                        List<Transaction> list = DBUtil.getLastTransactions();
-//                        TransactionTableModel lastTransactionsTableModel = new TransactionTableModel();
-//                        lastTransactionsTableModel.setData(list);
-//                        lastTransactionsTable.setModel(lastTransactionsTableModel);
                     } catch (ParseException parseException) {
                         parseException.printStackTrace();
                     } catch (Exception exception) {
@@ -95,7 +93,28 @@ public class TransactionAppGUI extends JFrame{
 
     }
 
+    private void setProfit(List<model.Profit> profitList){
+        if(profitList == null){
+            try {
+                profitList = DBUtil.getAllProfits("quarter");
+                miniProfitPanel1 = new MiniProfitPanel();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if(lastProfitsTable != null) {
+            ProfitTableModel profitModel = new ProfitTableModel(profitList);
+            lastProfitsTable.setModel(profitModel);
+        }
+        miniProfitPanel1.setProfitList(profitList);
+    }
+
     private void createUIComponents() {
+        try {
+            setProfit(profitList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
