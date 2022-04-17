@@ -7,8 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-
-public class Profit extends JFrame {
+public class Profits extends JFrame {
     private JPanel profit;
     private JLabel monthLabel;
     private JComboBox showProfitForComboBox;
@@ -19,7 +18,7 @@ public class Profit extends JFrame {
     private ProfitPanel myPanel;
     List<model.Profit> profitList;
 
-    public Profit(String title) throws Exception {
+    public Profits(String title) throws Exception {
         super(title);
 
         setContentPane(profit);
@@ -33,15 +32,14 @@ public class Profit extends JFrame {
         showProfitForComboBox.addItem("quarter");
         showProfitForComboBox.addItem("last year");
 
+        //Filling the profits table
         ProfitTableModel profitModel = new ProfitTableModel(DBUtil.getAllProfits(""));
-
         profitTable.setModel(profitModel);
 
         showProfitForComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(e.getSource()==showProfitForComboBox){
-
                     switch((String) showProfitForComboBox.getSelectedItem()){
                         case ("all the time"):
                             try {
@@ -71,6 +69,8 @@ public class Profit extends JFrame {
             }
         });
     }
+
+    //Adding the profit diagram to the window
     private void setProfit(List<model.Profit> profitList){
         if(profitList == null){
             try {

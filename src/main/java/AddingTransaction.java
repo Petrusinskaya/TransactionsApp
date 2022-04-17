@@ -72,7 +72,6 @@ public class AddingTransaction extends JFrame {
         monthComboBox.addItem("November");
         monthComboBox.addItem("December");
 
-        //Adding the options to monthComboBox
         for (int i=0; i<2; i++) {
             yearComboBox.addItem(Calendar.getInstance().get(Calendar.YEAR)-i);
         }

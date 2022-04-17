@@ -14,8 +14,8 @@ public class Transactions extends JFrame{
     private JComboBox typeComboBox;
     private JComboBox amountComboBox;
     private JComboBox sourceComboBox;
-    private JButton sortButton;
-    private JButton unsortButton;
+    private JButton filterButton;
+    private JButton unFilterButton;
     private JTable allTransactionsTable;
 
     public Transactions(String title) throws Exception {
@@ -60,10 +60,10 @@ public class Transactions extends JFrame{
         allTransactionsTableModel.setData(list);
         allTransactionsTable.setModel(allTransactionsTableModel);
 
-        sortButton.addActionListener(new ActionListener() {
+        filterButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(e.getSource()==sortButton){
+                if(e.getSource()== filterButton){
                     List<Transaction> list = null;
                     String date = (String) periodComboBox.getSelectedItem();
                     String type = (String) typeComboBox.getSelectedItem();
@@ -82,10 +82,10 @@ public class Transactions extends JFrame{
             }
         });
 
-        unsortButton.addActionListener(new ActionListener() {
+        unFilterButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(e.getSource()==unsortButton){
+                if(e.getSource()== unFilterButton){
                     List<Transaction> list = null;
                     try {
                         list = DBUtil.getAllTransactions();

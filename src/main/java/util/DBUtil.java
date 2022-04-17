@@ -2,12 +2,14 @@ package util;
 
 import model.Profit;
 import model.Transaction;
+
 import org.h2.jdbcx.JdbcConnectionPool;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -21,11 +23,11 @@ public class DBUtil {
      * Static initialization of DBUtil class
      */
     static {
-        cp = JdbcConnectionPool.create("jdbc:h2:./myTransactions.db", "sa", ""); // creating database connection pool
+        cp = JdbcConnectionPool.create("jdbc:h2:./myTransactions.db", "sa", ""); // Creating database connection pool
     }
 
     /**
-     * Method for getting connection from this pool
+     * Method for getting a connection from the database connection pool
      * @return
      * @throws SQLException
      */
@@ -79,7 +81,6 @@ public class DBUtil {
         ResultSet rs = conn.createStatement().executeQuery(sql);
         while(rs.next()) {
             Transaction tr = new Transaction();
-            // Retrieve by column name
             tr.setDate(rs.getDate("Date"));
             tr.setType(rs.getString("Type"));
             tr.setAmount(rs.getFloat("Amount"));
@@ -95,7 +96,6 @@ public class DBUtil {
         Connection conn = getConnection(); // conn - an object containing the current connection to database
         String sql = "SELECT * FROM TRANSACTIONS WHERE 1=1 <<DATE>> <<TYPE>> <<AMOUNT>> <<SOURCE>> ORDER BY \"Date\" DESC";
 
-        int index = 1;
         if (!"Any time".equals(date)){
             sql = sql.replaceAll("<<DATE>>","AND \"Date\">=?");
         }
@@ -142,6 +142,7 @@ public class DBUtil {
         Date dateToString = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         java.sql.Date sqlDate = new java.sql.Date(dateToString.getTime());
 
+        int index = 1;
         if (!"Any time".equals(date)){
             preparedStatement.setDate(index++, sqlDate);
         }
@@ -160,7 +161,6 @@ public class DBUtil {
 
         while(rs.next()) {
             Transaction tr = new Transaction();
-            // Retrieve by column name
             tr.setDate(rs.getDate("Date"));
             tr.setType(rs.getString("Type"));
             tr.setAmount(rs.getFloat("Amount"));
@@ -173,7 +173,8 @@ public class DBUtil {
 
     public static List<Profit> getAllProfits(String period) throws Exception {
         Connection conn = getConnection(); // conn - an object containing the current connection to database
-        String sql = "SELECT DATE_TRUNC(MONTH, \"Date\") AS DATECUT, \"Type\", SUM(AMOUNT) AS SUM FROM TRANSACTIONS <<WHERE_PERIOD>> GROUP BY DATECUT, \"Type\" ORDER BY DATECUT";
+        String sql = "SELECT DATE_TRUNC(MONTH, \"Date\") AS DATECUT, \"Type\", SUM(AMOUNT) AS SUM " +
+                "FROM TRANSACTIONS <<WHERE_PERIOD>> GROUP BY DATECUT, \"Type\" ORDER BY DATECUT";
         if(period!=null && !"".equals(period)){
             sql = sql.replaceAll("<<WHERE_PERIOD>>", " WHERE \"Date\" > ? ");
         }else{
@@ -191,6 +192,7 @@ public class DBUtil {
             java.sql.Date sqlDate = new java.sql.Date(date.getTime());
             preparedStatement.setDate(1, sqlDate);
         }
+
         ResultSet rs = preparedStatement.executeQuery();
         Date prevDate = null;
         Float prevTypeIncomeSum = 0f;

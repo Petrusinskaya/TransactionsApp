@@ -14,6 +14,7 @@ public class MiniProfitPanel extends JPanel {
     public MiniProfitPanel(){
         //setBorder(BorderFactory.createLineBorder(Color.black));
     }
+
     public MiniProfitPanel(List<Profit> profitList){
         this();
         setProfitList(profitList);

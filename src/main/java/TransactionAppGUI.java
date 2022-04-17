@@ -73,7 +73,7 @@ public class TransactionAppGUI extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 if(e.getSource()== viewProfitPageButton){
                     try {
-                        new Profit("Profit page");
+                        new Profits("Profit page");
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }
@@ -93,6 +93,8 @@ public class TransactionAppGUI extends JFrame{
 
     }
 
+
+    //Adding the profit diagram to the window
     private void setProfit(List<model.Profit> profitList){
         if(profitList == null){
             try {
